@@ -1,6 +1,7 @@
 # Proyecto1:  Terraform + Ansible
 
 Escenario con dos máquinas (`web` y `bd`) creado con Terraform sobre libvirt y configurado con Ansible para desplegar una aplicación PHP con MariaDB (guestbook).
+Aplicación: https://github.com/josedom24/guestbook_php/tree/main
 
 ## Requisitos
 
