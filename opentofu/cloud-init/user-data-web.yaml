@@ -1,0 +1,18 @@
+#cloud-config
+hostname: web
+timezone: Europe/Madrid
+
+users:
+  - name: ismael
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    groups: users, admin
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJjvHrBWVkXrv53sFfWRXC2h42npOW1kdHE4PL6vpa3O ismael@DebianIsmael
+
+chpasswd:
+  expire: False
+  users:
+    - name: ismael
+      password: usuario
+      type: text
