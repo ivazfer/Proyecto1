@@ -5,7 +5,7 @@ Aplicación: https://github.com/josedom24/guestbook_php/tree/main
 
 ## Requisitos
 
-- libvirt/KVM con las imágenes `debian13-base.qcow2` y `ubuntu2604-base.qcow2` en el pool `default`
+- libvirt/KVM con las imágenes `debian13-base.qcow2` y `ubuntu2604_plantilla.img` en el pool `default`
 - Terraform (u OpenTofu) y Ansible
 - Colección `community.mysql`
 
