@@ -1,0 +1,12 @@
+# Red de datos
+ip_datos_web: 10.0.0.10
+ip_datos_bd: 10.0.0.20
+
+# Base de datos
+bd_nombre: guestbook
+bd_usuario: guestbook
+bd_password: guestbook123
+
+# Servidor web
+dominio: www.ismael.org
+docroot: /var/www/guestbook
