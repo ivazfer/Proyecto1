@@ -16,3 +16,4 @@
   loop:
     - curl
     - nano
+    - mariadb-client

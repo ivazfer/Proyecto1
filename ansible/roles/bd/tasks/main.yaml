@@ -1,0 +1,44 @@
+- name: Instalar MariaDB
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - mariadb-server
+    - python3-mysqldb
+
+- name: MariaDB escucha solo en la red de datos
+  ansible.builtin.lineinfile:
+    path: /etc/mysql/mariadb.conf.d/50-server.cnf
+    regexp: '^bind-address'
+    line: 'bind-address = {{ ip_datos_bd }}'
+  notify: restart mariadb
+
+- name: Crear la base de datos
+  community.mysql.mysql_db:
+    name: "{{ bd_nombre }}"
+    state: present
+    login_unix_socket: /run/mysqld/mysqld.sock
+  register: bd_creada
+
+- name: Copiar el esquema de la aplicación
+  ansible.builtin.copy:
+    src: schema.sql
+    dest: /tmp/schema.sql
+    mode: '0644'
+
+- name: Crear las tablas (solo si la base de datos es nueva)
+  community.mysql.mysql_db:
+    name: "{{ bd_nombre }}"
+    state: import
+    target: /tmp/schema.sql
+    login_unix_socket: /run/mysqld/mysqld.sock
+  when: bd_creada.changed
+
+- name: Crear el usuario (solo desde la IP de web)
+  community.mysql.mysql_user:
+    name: "{{ bd_usuario }}"
+    password: "{{ bd_password }}"
+    host: "{{ ip_datos_web }}"
+    priv: "{{ bd_nombre }}.*:ALL"
+    state: present
+    login_unix_socket: /run/mysqld/mysqld.sock
