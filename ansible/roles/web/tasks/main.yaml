@@ -1,0 +1,64 @@
+- name: Instalar Apache y PHP
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - apache2
+    - libapache2-mod-php
+    - php-mysql
+    - php-mbstring
+
+- name: Activar el módulo rewrite
+  ansible.builtin.command: a2enmod rewrite
+  args:
+    creates: /etc/apache2/mods-enabled/rewrite.load
+  notify: restart apache2
+
+- name: Crear el DocumentRoot
+  ansible.builtin.file:
+    path: "{{ docroot }}"
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Copiar la aplicación
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "{{ docroot }}/{{ item }}"
+    owner: www-data
+    group: www-data
+    mode: '0644'
+  loop:
+    - index.php
+    - style.css
+    - .htaccess
+
+- name: Generar config.php con los datos de la base de datos
+  ansible.builtin.template:
+    src: config.php.j2
+    dest: "{{ docroot }}/config.php"
+    owner: www-data
+    group: www-data
+    mode: '0640'
+
+- name: Crear el virtual host
+  ansible.builtin.template:
+    src: guestbook.conf.j2
+    dest: /etc/apache2/sites-available/guestbook.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: reload apache2
+
+- name: Activar el virtual host
+  ansible.builtin.command: a2ensite guestbook.conf
+  args:
+    creates: /etc/apache2/sites-enabled/guestbook.conf
+  notify: reload apache2
+
+- name: Desactivar el sitio por defecto
+  ansible.builtin.command: a2dissite 000-default.conf
+  args:
+    removes: /etc/apache2/sites-enabled/000-default.conf
+  notify: reload apache2
