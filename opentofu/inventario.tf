@@ -4,5 +4,6 @@ resource "local_file" "inventario" {
   content = templatefile("${path.module}/inventario.tftpl", {
     ip_web = try(libvirt_domain.web.network_interface[0].addresses[0], "")
     ip_bd  = try(libvirt_domain.bd.network_interface[0].addresses[0], "")
+    ip_san = try(libvirt_domain.san.network_interface[0].addresses[0], "")
   })
 }

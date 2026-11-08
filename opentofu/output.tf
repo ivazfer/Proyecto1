@@ -13,3 +13,11 @@ output "bd" {
     ip_datos = "10.0.0.20"
   }
 }
+
+output "san" {
+  value = {
+    nombre   = "san"
+    ip_nat   = try(libvirt_domain.san.network_interface[0].addresses[0], "No disponible")
+    ip_datos = "10.0.0.30"
+  }
+}
