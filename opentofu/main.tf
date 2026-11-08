@@ -89,3 +89,58 @@ resource "libvirt_domain" "bd" {
     target_type = "serial"
   }
 }
+
+##############################################
+# san — Debian 13 (target iSCSI)
+##############################################
+
+resource "libvirt_volume" "san-disk" {
+  name             = "p1-san.qcow2"
+  pool             = var.libvirt_pool_name
+  base_volume_name = var.imagen_san
+  base_volume_pool = var.libvirt_pool_name
+  format           = "qcow2"
+  size             = 10 * 1024 * 1024 * 1024 # 10 GB
+}
+
+# Disco que se exporta por iSCSI (LUN 1)
+resource "libvirt_volume" "san-lun" {
+  name   = "p1-san-lun.qcow2"
+  pool   = var.libvirt_pool_name
+  format = "qcow2"
+  size   = 2 * 1024 * 1024 * 1024 # 2 GB
+}
+
+resource "libvirt_cloudinit_disk" "san-cloudinit" {
+  name           = "p1-san-cloudinit.iso"
+  pool           = var.libvirt_pool_name
+  user_data      = file("${path.module}/cloud-init/user-data-san.yaml")
+  network_config = file("${path.module}/cloud-init/network-config-san.yaml")
+}
+
+resource "libvirt_domain" "san" {
+  name   = "p1-san"
+  memory = var.memoria_san
+  vcpu   = 1
+
+  # ens3: red NAT con DHCP
+  network_interface {
+    network_id     = libvirt_network.p1-nat.id
+    wait_for_lease = true
+  }
+
+  # ens4: red de datos (10.0.0.30)
+  network_interface {
+    network_id = libvirt_network.p1-datos.id
+  }
+
+  disk { volume_id = libvirt_volume.san-disk.id } # vda: sistema
+  disk { volume_id = libvirt_volume.san-lun.id }  # vdb: LUN iSCSI
+  cloudinit = libvirt_cloudinit_disk.san-cloudinit.id
+
+  console {
+    type        = "pty"
+    target_port = "0"
+    target_type = "serial"
+  }
+}

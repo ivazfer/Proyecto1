@@ -15,6 +15,11 @@ variable "imagen_bd" {
   default = "ubuntu_plantilla.img"
 }
 
+variable "imagen_san" {
+  type    = string
+  default = "debian-13-plantilla.qcow2"
+}
+
 # Memoria de cada máquina (MB)
 variable "memoria_web" {
   type    = number
@@ -24,4 +29,9 @@ variable "memoria_web" {
 variable "memoria_bd" {
   type    = number
   default = 1024
+}
+
+variable "memoria_san" {
+  type    = number
+  default = 512
 }
