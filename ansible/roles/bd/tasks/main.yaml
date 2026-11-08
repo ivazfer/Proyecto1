@@ -1,3 +1,37 @@
+# --- Iniciador iSCSI ---
+- name: Instalar open-iscsi
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - open-iscsi
+
+- name: Comprobar si el target ya está descubierto
+  ansible.builtin.stat:
+    path: "/etc/iscsi/nodes/{{ iscsi_iqn }}"
+  register: nodo
+
+- name: Descubrir el target (solo la primera vez)
+  community.general.open_iscsi:
+    portal: "{{ ip_datos_san }}"
+    discover: true
+  when: not nodo.stat.exists
+
+- name: Conectar al target con CHAP y conexión automática al arrancar
+  community.general.open_iscsi:
+    portal: "{{ ip_datos_san }}"
+    target: "{{ iscsi_iqn }}"
+    node_auth: CHAP
+    node_user: "{{ iscsi_usuario }}"
+    node_pass: "{{ iscsi_password }}"
+    login: true
+    auto_node_startup: true
+
+- name: Esperar a que aparezca el disco
+  ansible.builtin.wait_for:
+    path: "{{ iscsi_dispositivo }}"
+    timeout: 30
+
 - name: Instalar MariaDB
   ansible.builtin.apt:
     name: "{{ item }}"
