@@ -18,3 +18,11 @@ terraform apply
 cd ../ansible
 ansible-playbook site.yaml
 ```
+
+## Modificación 1: SAN iSCSI
+
+![Esquema](docs/esquema.png)
+
+- Máquina `san` (Debian 13, 10.0.0.30) con un disco de 2 GB exportado por iSCSI con tgt y autenticación CHAP.
+- `bd` se conecta como iniciador (open-iscsi) y monta el disco en `/var/lib/mysql` con una unidad de systemd por UUID.
+- Los datos de MariaDB están en la SAN: sobreviven a recrear `bd`.
