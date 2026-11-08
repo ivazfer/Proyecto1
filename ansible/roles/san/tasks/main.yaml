@@ -1,0 +1,21 @@
+- name: Instalar tgt
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - tgt
+
+- name: Configurar el target iSCSI
+  ansible.builtin.template:
+    src: iscsi.conf.j2
+    dest: /etc/tgt/conf.d/bd.conf
+    owner: root
+    group: root
+    mode: '0600'
+  notify: restart tgt
+
+- name: tgt arrancado y habilitado
+  ansible.builtin.service:
+    name: tgt
+    state: started
+    enabled: true

@@ -1,0 +1,4 @@
+- name: restart tgt
+  ansible.builtin.service:
+    name: tgt
+    state: restarted

@@ -1,0 +1,6 @@
+# Generado por Ansible (rol san)
+<target {{ iscsi_iqn }}>
+    backing-store /dev/vdb
+    initiator-address {{ ip_datos_bd }}
+    incominguser {{ iscsi_usuario }} {{ iscsi_password }}
+</target>

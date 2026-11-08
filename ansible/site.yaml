@@ -16,4 +16,8 @@
   roles:
     - web
 
-
+- name: Configurar servidor de almacenamiento (SAN)
+  hosts: servidores_san
+  become: true
+  roles:
+    - san
