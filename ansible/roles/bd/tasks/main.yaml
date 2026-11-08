@@ -32,6 +32,53 @@
     path: "{{ iscsi_dispositivo }}"
     timeout: 30
 
+# --- Formato y montaje ---
+- name: Formatear el disco iSCSI (solo si no tiene sistema de ficheros)
+  community.general.filesystem:
+    fstype: ext4
+    dev: "{{ iscsi_dispositivo }}"
+  register: formateo
+
+- name: Obtener el UUID del disco
+  ansible.builtin.command: blkid -s UUID -o value {{ iscsi_dispositivo }}
+  register: iscsi_uuid
+  changed_when: false
+
+- name: Crear la unidad de montaje de systemd
+  ansible.builtin.template:
+    src: var-lib-mysql.mount.j2
+    dest: /etc/systemd/system/var-lib-mysql.mount
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Crear el directorio de configuración de mariadb.service
+  ansible.builtin.file:
+    path: /etc/systemd/system/mariadb.service.d
+    state: directory
+    mode: '0755'
+
+- name: MariaDB espera al montaje iSCSI
+  ansible.builtin.copy:
+    src: mariadb-iscsi.conf
+    dest: /etc/systemd/system/mariadb.service.d/iscsi.conf
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Montar /var/lib/mysql y activarlo al arrancar
+  ansible.builtin.systemd_service:
+    name: var-lib-mysql.mount
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: Quitar lost+found del disco recién formateado
+  ansible.builtin.file:
+    path: /var/lib/mysql/lost+found
+    state: absent
+  when: formateo.changed
+
 - name: Instalar MariaDB
   ansible.builtin.apt:
     name: "{{ item }}"

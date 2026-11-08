@@ -1,0 +1,14 @@
+# Generado por Ansible (rol bd)
+[Unit]
+Requires=open-iscsi.service
+Wants=network-online.target
+After=open-iscsi.service network-online.target
+
+[Mount]
+What=/dev/disk/by-uuid/{{ iscsi_uuid.stdout }}
+Where=/var/lib/mysql
+Type=ext4
+Options=_netdev
+
+[Install]
+WantedBy=remote-fs.target
