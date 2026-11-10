@@ -6,16 +6,16 @@
   loop:
     - open-iscsi
 
-- name: Comprobar si el target ya está descubierto
-  ansible.builtin.stat:
-    path: "/etc/iscsi/nodes/{{ iscsi_iqn }}"
-  register: nodo
+- name: Ver los targets ya descubiertos
+  community.general.open_iscsi:
+    show_nodes: true
+  register: nodos
 
 - name: Descubrir el target (solo la primera vez)
   community.general.open_iscsi:
     portal: "{{ ip_datos_san }}"
     discover: true
-  when: not nodo.stat.exists
+  when: iscsi_iqn not in nodos.nodes
 
 - name: Conectar al target con CHAP y conexión automática al arrancar
   community.general.open_iscsi:
