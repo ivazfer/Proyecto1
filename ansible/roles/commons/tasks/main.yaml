@@ -8,6 +8,7 @@
   ansible.builtin.apt:
     update_cache: true
     upgrade: true
+    lock_timeout: 600
 
 - name: Instalar paquetes comunes
   ansible.builtin.apt:
