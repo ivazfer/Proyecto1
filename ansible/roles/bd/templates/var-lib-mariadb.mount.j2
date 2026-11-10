@@ -6,7 +6,7 @@ After=open-iscsi.service network-online.target
 
 [Mount]
 What=/dev/disk/by-uuid/{{ iscsi_uuid.stdout }}
-Where=/var/lib/mysql
+Where=/var/lib/mariadb
 Type=ext4
 Options=_netdev
 

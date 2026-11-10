@@ -46,8 +46,8 @@
 
 - name: Crear la unidad de montaje de systemd
   ansible.builtin.template:
-    src: var-lib-mysql.mount.j2
-    dest: /etc/systemd/system/var-lib-mysql.mount
+    src: var-lib-mariadb.mount.j2
+    dest: /etc/systemd/system/var-lib-mariadb.mount
     owner: root
     group: root
     mode: '0644'
@@ -66,16 +66,16 @@
     group: root
     mode: '0644'
 
-- name: Montar /var/lib/mysql y activarlo al arrancar
+- name: Montar /var/lib/mariadb y activarlo al arrancar
   ansible.builtin.systemd_service:
-    name: var-lib-mysql.mount
+    name: var-lib-mariadb.mount
     state: started
     enabled: true
     daemon_reload: true
 
 - name: Quitar lost+found del disco recién formateado
   ansible.builtin.file:
-    path: /var/lib/mysql/lost+found
+    path: /var/lib/mariadb/lost+found
     state: absent
   when: formateo.changed
 
