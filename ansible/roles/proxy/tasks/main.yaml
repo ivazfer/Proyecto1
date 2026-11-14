@@ -1,0 +1,44 @@
+- name: Instalar la librería de criptografía
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - python3-cryptography
+
+- name: Clave privada del proxy
+  community.crypto.openssl_privatekey:
+    path: /etc/ssl/private/proxy.key
+    mode: '0600'
+
+- name: Petición de certificado (CSR) para el dominio
+  community.crypto.openssl_csr:
+    path: /etc/ssl/proxy.csr
+    privatekey_path: /etc/ssl/private/proxy.key
+    common_name: "{{ dominio }}"
+    subject_alt_name:
+      - "DNS:{{ dominio }}"
+
+- name: Traer la CSR al equipo de control
+  ansible.builtin.fetch:
+    src: /etc/ssl/proxy.csr
+    dest: "{{ ca_dir }}/proxy.csr"
+    flat: true
+
+- name: Firmar el certificado con la CA
+  community.crypto.x509_certificate:
+    path: "{{ ca_dir }}/proxy.crt"
+    csr_path: "{{ ca_dir }}/proxy.csr"
+    provider: ownca
+    ownca_path: "{{ ca_dir }}/ca.crt"
+    ownca_privatekey_path: "{{ ca_dir }}/ca.key"
+    ownca_not_after: "+825d"
+  delegate_to: localhost
+  become: false
+
+- name: Copiar el certificado firmado al proxy
+  ansible.builtin.copy:
+    src: "{{ ca_dir }}/proxy.crt"
+    dest: /etc/ssl/certs/proxy.crt
+    owner: root
+    group: root
+    mode: '0644'

@@ -28,3 +28,9 @@
   gather_facts: false
   roles:
     - ca
+
+- name: Configurar el proxy inverso
+  hosts: servidores_proxy
+  become: true
+  roles:
+    - proxy
