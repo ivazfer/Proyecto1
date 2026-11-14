@@ -22,3 +22,9 @@
   roles:
     - web
 
+- name: Crear la autoridad certificadora (en el equipo de control)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  roles:
+    - ca
