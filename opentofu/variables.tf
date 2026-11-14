@@ -20,6 +20,10 @@ variable "imagen_san" {
   default = "debian-13-plantilla.qcow2"
 }
 
+variable "imagen_proxy" {
+  type    = string
+  default = "debian-13-plantilla.qcow2"
+}
 # Memoria de cada máquina (MB)
 variable "memoria_web" {
   type    = number
@@ -32,6 +36,11 @@ variable "memoria_bd" {
 }
 
 variable "memoria_san" {
+  type    = number
+  default = 512
+}
+
+variable "memoria_proxy" {
   type    = number
   default = 512
 }

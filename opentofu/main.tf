@@ -144,3 +144,49 @@ resource "libvirt_domain" "san" {
     target_type = "serial"
   }
 }
+
+##############################################
+# proxy — Debian 13 (proxy inverso HTTPS)
+##############################################
+
+resource "libvirt_volume" "proxy-disk" {
+  name             = "p1-proxy.qcow2"
+  pool             = var.libvirt_pool_name
+  base_volume_name = var.imagen_proxy
+  base_volume_pool = var.libvirt_pool_name
+  format           = "qcow2"
+  size             = 10 * 1024 * 1024 * 1024 # 10 GB
+}
+
+resource "libvirt_cloudinit_disk" "proxy-cloudinit" {
+  name           = "p1-proxy-cloudinit.iso"
+  pool           = var.libvirt_pool_name
+  user_data      = file("${path.module}/cloud-init/user-data-proxy.yaml")
+  network_config = file("${path.module}/cloud-init/network-config-proxy.yaml")
+}
+
+resource "libvirt_domain" "proxy" {
+  name   = "p1-proxy"
+  memory = var.memoria_proxy
+  vcpu   = 1
+
+  # ens3: red NAT con DHCP (entrada desde fuera)
+  network_interface {
+    network_id     = libvirt_network.p1-nat.id
+    wait_for_lease = true
+  }
+
+  # ens4: red de datos (10.0.0.5)
+  network_interface {
+    network_id = libvirt_network.p1-datos.id
+  }
+
+  disk { volume_id = libvirt_volume.proxy-disk.id }
+  cloudinit = libvirt_cloudinit_disk.proxy-cloudinit.id
+
+  console {
+    type        = "pty"
+    target_port = "0"
+    target_type = "serial"
+  }
+}
