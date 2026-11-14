@@ -2,6 +2,7 @@
 ip_datos_web: 10.0.0.10
 ip_datos_bd: 10.0.0.20
 ip_datos_san: 10.0.0.30
+ip_datos_proxy: 10.0.0.5
 
 # Base de datos
 bd_nombre: guestbook
@@ -17,3 +18,7 @@ iscsi_iqn: iqn.2026-11.org.ismael:bd
 iscsi_usuario: bd
 iscsi_password: secretoiscsi123
 iscsi_dispositivo: "/dev/disk/by-path/ip-{{ ip_datos_san }}:3260-iscsi-{{ iscsi_iqn }}-lun-1"
+
+# CA propia
+ca_dir: "{{ playbook_dir }}/ca"
+ca_nombre: CA Proyecto1 Ismael

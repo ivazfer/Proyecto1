@@ -8,3 +8,6 @@ crash.log
 
 # Inventario generado por Terraform
 ansible/hosts
+
+# CA propia (la clave privada no se sube)
+ansible/ca/
