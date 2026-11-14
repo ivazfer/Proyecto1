@@ -21,3 +21,11 @@ output "san" {
     ip_datos = "10.0.0.30"
   }
 }
+
+output "proxy" {
+  value = {
+    nombre   = "proxy"
+    ip_nat   = try(libvirt_domain.proxy.network_interface[0].addresses[0], "No disponible")
+    ip_datos = "10.0.0.5"
+  }
+}

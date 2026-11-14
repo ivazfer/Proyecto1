@@ -16,3 +16,8 @@ all:
         san:
           ansible_host: ${ip_san}
           ansible_user: ismael
+    servidores_proxy:
+      hosts:
+        proxy:
+          ansible_host: ${ip_proxy}
+          ansible_user: ismael
