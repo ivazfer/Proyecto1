@@ -62,3 +62,10 @@
   args:
     removes: /etc/apache2/sites-enabled/000-default.conf
   notify: reload apache2
+
+- name: Apache escucha solo en la red de datos
+  ansible.builtin.lineinfile:
+    path: /etc/apache2/ports.conf
+    regexp: '^Listen '
+    line: 'Listen {{ ip_datos_web }}:80'
+  notify: restart apache2
