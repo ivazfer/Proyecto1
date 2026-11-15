@@ -42,3 +42,45 @@
     owner: root
     group: root
     mode: '0644'
+  notify: reload apache2
+
+- name: Instalar Apache
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - apache2
+
+- name: Activar los módulos de SSL y proxy
+  community.general.apache2_module:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - ssl
+    - proxy
+    - proxy_http
+    - headers
+  notify: restart apache2
+
+- name: Crear el virtual host del proxy
+  ansible.builtin.template:
+    src: proxy.conf.j2
+    dest: /etc/apache2/sites-available/proxy.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: reload apache2
+
+- name: Activar el virtual host del proxy
+  ansible.builtin.file:
+    src: ../sites-available/proxy.conf
+    dest: /etc/apache2/sites-enabled/proxy.conf
+    state: link
+  notify: reload apache2
+
+- name: Desactivar el sitio por defecto
+  ansible.builtin.file:
+    path: /etc/apache2/sites-enabled/000-default.conf
+    state: absent
+  notify: reload apache2
+

@@ -1,0 +1,21 @@
+# Generado por Ansible (rol proxy)
+<VirtualHost *:80>
+    ServerName {{ dominio }}
+    Redirect permanent / https://{{ dominio }}/
+</VirtualHost>
+
+<VirtualHost *:443>
+    ServerName {{ dominio }}
+
+    SSLEngine on
+    SSLCertificateFile /etc/ssl/certs/proxy.crt
+    SSLCertificateKeyFile /etc/ssl/private/proxy.key
+
+    ProxyPreserveHost On
+    RequestHeader set X-Forwarded-Proto "https"
+    ProxyPass / http://{{ ip_datos_web }}/
+    ProxyPassReverse / http://{{ ip_datos_web }}/
+
+    ErrorLog ${APACHE_LOG_DIR}/proxy_error.log
+    CustomLog ${APACHE_LOG_DIR}/proxy_access.log combined
+</VirtualHost>
