@@ -1,23 +1,28 @@
 # Fichero generado por Terraform (inventario.tf): no lo edites a mano
 all:
+  vars:
+    ansible_user: ismael
   children:
     servidores_web:
       hosts:
         web:
-          ansible_host: ${ip_web}
-          ansible_user: ismael
+          ansible_host: 10.0.0.10
+          ip_datos: 10.0.0.10
+          ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ismael@${ip_proxy}"'
     servidores_bd:
       hosts:
         bd:
-          ansible_host: ${ip_bd}
-          ansible_user: ismael
+          ansible_host: 10.0.0.20
+          ip_datos: 10.0.0.20
+          ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ismael@${ip_proxy}"'
     servidores_san:
       hosts:
         san:
-          ansible_host: ${ip_san}
-          ansible_user: ismael
+          ansible_host: 10.0.0.30
+          ip_datos: 10.0.0.30
+          ansible_ssh_common_args: '-o ProxyCommand="ssh -W %h:%p -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ismael@${ip_proxy}"'
     servidores_proxy:
       hosts:
         proxy:
           ansible_host: ${ip_proxy}
-          ansible_user: ismael
+          ip_datos: 10.0.0.5
