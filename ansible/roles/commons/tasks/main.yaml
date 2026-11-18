@@ -18,3 +18,13 @@
     - curl
     - nano
     - mariadb-client
+
+- name: Endurecer SSH
+  ansible.builtin.template:
+    src: 10-hardening.conf.j2
+    dest: /etc/ssh/sshd_config.d/10-hardening.conf
+    owner: root
+    group: root
+    mode: '0644'
+    validate: /usr/sbin/sshd -t -f %s
+  notify: restart ssh
