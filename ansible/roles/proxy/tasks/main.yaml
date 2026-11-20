@@ -84,3 +84,25 @@
     state: absent
   notify: reload apache2
 
+- name: Instalar fail2ban
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - fail2ban
+    - python3-systemd
+
+- name: Configurar la jail de SSH
+  ansible.builtin.template:
+    src: jail.local.j2
+    dest: /etc/fail2ban/jail.local
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart fail2ban
+
+- name: fail2ban arrancado y habilitado
+  ansible.builtin.service:
+    name: fail2ban
+    state: started
+    enabled: true
