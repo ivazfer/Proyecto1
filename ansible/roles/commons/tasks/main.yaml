@@ -19,6 +19,14 @@
     - nano
     - mariadb-client
 
+- name: Permitir escuchar en la IP de datos aunque aún no esté levantada
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_nonlocal_bind
+    value: '1'
+    state: present
+    sysctl_set: true
+  when: "'servidores_proxy' not in group_names"
+
 - name: Endurecer SSH
   ansible.builtin.template:
     src: 10-hardening.conf.j2

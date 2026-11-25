@@ -2,3 +2,12 @@
   ansible.builtin.service:
     name: ssh
     state: restarted
+  listen: restart ssh
+
+- name: reiniciar el socket de ssh (Ubuntu)
+  ansible.builtin.systemd_service:
+    name: ssh.socket
+    state: restarted
+    daemon_reload: true
+  when: ansible_distribution == 'Ubuntu'
+  listen: restart ssh

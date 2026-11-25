@@ -5,3 +5,8 @@ KbdInteractiveAuthentication no
 PubkeyAuthentication yes
 AllowUsers ismael
 MaxAuthTries 3
+
+{% if 'servidores_proxy' not in group_names %}
+# Máquina interna: SSH solo en la red de datos (se entra por el proxy)
+ListenAddress {{ ip_datos }}
+{% endif %}
