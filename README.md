@@ -34,3 +34,15 @@ ansible-playbook site.yaml
 - El proxy (Apache) recibe por HTTPS, redirige el puerto 80 a HTTPS y reenvía a `web` por la red de datos.
 - `web` solo escucha en la red de datos (10.0.0.10).
 - Para ver el candado en el navegador, importar `ansible/ca/ca.crt` como autoridad de confianza.
+## Modificación 3: bastión SSH con hardening y fail2ban
+
+**Por qué:** hasta ahora las cuatro máquinas aceptaban SSH desde la red NAT, con contraseña y como root. Con un bastión solo queda una puerta de entrada, y es la única que hay que vigilar.
+
+## Modificación 3: bastión SSH con hardening y fail2ban
+
+- El `proxy` pasa a ser también el bastión: es la única máquina que acepta SSH desde la red NAT.
+- `web`, `bd` y `san` solo escuchan SSH en la red de datos. Para entrar hay que saltar por el proxy: `ssh -J ismael@<IP NAT del proxy> ismael@10.0.0.10`.
+- Ansible hace lo mismo: el inventario usa la IP de datos y un `ProxyCommand` que pasa por el proxy.
+- SSH endurecido en todas las máquinas: sin root, sin contraseña (solo clave), solo el usuario `ismael` y 3 intentos.
+- fail2ban en el proxy: si una IP falla 3 veces, la banea 10 minutos.
+- Así solo queda una puerta de entrada, y es la que se vigila.
